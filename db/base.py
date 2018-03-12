@@ -1,7 +1,6 @@
 #encoding=utf-8
 import MySQLdb
 import time
-import sys
 
 class MysqlBase:
     def __init__(self):

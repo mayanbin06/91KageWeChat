@@ -1,14 +1,12 @@
 #encoding=utf-8
-import sys
-sys.path.append("..")
-
-from common.common import logger
 import tornado.ioloop
 import requests
 import json
+
+# local module
 from wx_config import WxConfig
 from token_cache import TokenCache
-
+from common.common import logger
 
 class WxShedule(object):
     """

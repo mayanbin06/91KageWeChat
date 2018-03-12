@@ -1,10 +1,8 @@
 #encoding=utf-8
-import sys
-sys.path.append("..")
 
+# local module
 from cache import BaseCache
 from common.common import logger
-
 
 class TokenCache(BaseCache):
     """

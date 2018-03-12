@@ -1,15 +1,13 @@
 #encoding=utf-8
-import sys
-sys.path.append("..")
-
-from common.common import logger
-from base import BaseHandler
-
 import hashlib
 import tornado.web
 import tornado.options  
 
-class WxSignatureHandler(BaseHandler):
+# local module
+from common.common import logger
+import base
+
+class WxSignatureHandler(base.BaseHandler):
     """
     微信服务器签名验证, 消息回复
 

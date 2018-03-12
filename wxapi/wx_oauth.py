@@ -1,10 +1,8 @@
 #encoding=utf-8
-import sys
 import urllib2
 import json
 
-sys.path.append("..")
-
+# local module
 from common.common import logger
 from wx_config import WxConfig
 

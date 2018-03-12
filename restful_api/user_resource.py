@@ -1,13 +1,14 @@
 #encoding=utf-8
-
-import sys
-sys.path.append("..")
-
 import tornado.web
 import urllib2
 import json
 
-from db.daos import userDao 
+# local module
+from db import daos
+
+from restful import mediatypes
+from restful.rest import get, post, put, delete
+from restful.rest import RestHandler
 
 #GET     # Read  
 #POST    # Create  
@@ -15,10 +16,6 @@ from db.daos import userDao
 #DELETE  # Delete
 
 # /api/user/json/{userid}, default is current user
-
-from restful import mediatypes
-from restful.rest import get, post, put, delete
-from restful.rest import RestHandler
 
 class UserResource(RestHandler):
     #@tornado.web.authenticated

@@ -1,13 +1,11 @@
 #encoding=utf-8
-
-import sys
-sys.path.append("..")
-
-from common.common import logger
 import uuid
 import time
 import base
 import MySQLdb
+
+# local module
+from common.common import logger
 
 '''保持一个连接?，应该改为连接池'''
 class UserDao(base.MysqlBase):

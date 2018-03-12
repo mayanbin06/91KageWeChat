@@ -1,15 +1,12 @@
 #encoding=utf-8
-
-import sys
-sys.path.append("..")
-
 import tornado.web
 import urllib2
 import json
+import base
 
-from base import BaseHandler
+# local module
 from wxapi import wx_oauth
-from db.daos import userDao 
+from db import daos
 
 # tornado 异步的实例，后期要改成异步
 #def MainHandler(tornado.web.RequestHandler):
@@ -29,7 +26,7 @@ from db.daos import userDao
 #        print '111',a.read()
 #        self.write("when i sleep 5s")
 
-class LoginHandler(BaseHandler):
+class LoginHandler(base.BaseHandler):
     AppId = 'wx21512b184ce97f79'
     AppSecret = '3dc1427af974bfe5b34b39408574038b'
 
@@ -54,7 +51,7 @@ class LoginHandler(BaseHandler):
 
    	userInfo = json.loads(ret['userinfo'])
 	tokenInfo = json.loads(ret['token_data'])
-        userId = userDao.QueryWeChat(userInfo['openid'])
+        userId = daos.userDao.QueryWeChat(userInfo['openid'])
         if not userId:
             # 没有用户绑定, 生成绑定用户, 此时应该把头像存到本地服务器, 目前先不做，暂时用微信的，如果失效再更新吧
             userId = userDao.GenerateUserByWeChat(userInfo, tokenInfo)
@@ -70,7 +67,7 @@ class LoginHandler(BaseHandler):
         self.set_secure_cookie(secure_cookie_name, expires_days=None, expires=7200)
         # else render 'denglu shibai'
 
-class LogoutHandler(BaseHandler):
+class LogoutHandler(base.BaseHandler):
     def get(self):
         self.clear_cookie(self.secure_username)
         self.redirect("/")

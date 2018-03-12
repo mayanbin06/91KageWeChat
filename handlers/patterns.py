@@ -1,6 +1,7 @@
 #encoding=utf-8
 import tornado.web
 
+#local module
 from wxauthorize import WxSignatureHandler
 from login import LoginHandler
 

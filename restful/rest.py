@@ -110,10 +110,8 @@ def delete(*params, **kwparams):
 
 #class RestHandler(tornado.web.RequestHandler):
 # modify for auth....
-import sys
-sys.path.append("..")
-from handlers.base import BaseHandler
-class RestHandler(BaseHandler):
+from handlers import base
+class RestHandler(base.BaseHandler):
     def get(self):
         """ Executes get method """
         self._exe('GET')
