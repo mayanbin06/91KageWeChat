@@ -3,7 +3,8 @@ import MySQLdb
 import time
 
 class MysqlBase:
-    def __init__(self):
+    def __init__(self, logger=None):
+        self.logger = logger
         self._conn()
 
     def _conn (self):

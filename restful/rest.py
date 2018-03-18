@@ -183,6 +183,7 @@ class RestHandler(base.BaseHandler):
                         else:
                             param_obj = convertJSON2OBJ(params_types[0],json.loads(body))
                         p_values.append(param_obj)
+
                     response = operation(*p_values)
                 
                     if response == None:
@@ -213,6 +214,8 @@ class RestHandler(base.BaseHandler):
                         if catch_fire == True:
                             raise PyRestfulException('Internal Server Error : response is not %s document'%produces)
                 except Exception as detail:
+                    import traceback
+                    print traceback.format_exc()
                     self.gen_http_error(500,'Internal Server Error : %s'%detail)
                     if catch_fire == True:
                         raise PyRestfulException(detail)

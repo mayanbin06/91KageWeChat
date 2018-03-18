@@ -3,7 +3,7 @@ import urllib2
 import json
 
 # local module
-from common.common import logger
+from utils.log import logger
 from wx_config import WxConfig
 
 ''' 使用授权也返回的code 来获取用户信息'''
@@ -28,3 +28,7 @@ def GetUserInfo(code):
     except Exception, e:
         logger.error('Get Wx user info error %s' % str(e))
         return {'state':3, 'errcode':0, 'errmsg':str(e)} 
+
+def GetUserOauth(redirect_url, state):
+    aouth_url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=%s&connect_redirect=1#wechat_redirect" % (WxConfig.AppID, redirect_url, state)
+    return aouth_url

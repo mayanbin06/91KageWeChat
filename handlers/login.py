@@ -3,10 +3,12 @@ import tornado.web
 import urllib2
 import json
 import base
+import time
 
 # local module
 from wxapi import wx_oauth
 from db import daos
+from utils.log import logger
 
 # tornado 异步的实例，后期要改成异步
 #def MainHandler(tornado.web.RequestHandler):
@@ -27,45 +29,56 @@ from db import daos
 #        self.write("when i sleep 5s")
 
 class LoginHandler(base.BaseHandler):
-    AppId = 'wx21512b184ce97f79'
-    AppSecret = '3dc1427af974bfe5b34b39408574038b'
-
-    @tornado.web.asynchronous
+    expiresTime = 720
+    #@tornado.web.asynchronous
     def get(self):
 
-        if self.current_user:
-            self.render('index.html')
-            return
+        #if self.current_user:
+        #    self.redirect('index.html')
+        #    return
+        #else:
+        #    print 'login ....'
 
         # 无current_user, 此处暂时只有微信登录
-        code = self.get_argument('code', default='0')
-        if code == 0:
-            self.write('err code 0')
+        code = self.get_argument('code', default=None)
+        # 没有code，还未授权，跳转授权页
+        if not code:
+            url = self.request.protocol + '://' + self.request.host + self.request.uri
+            redirect_url = wx_oauth.GetUserOauth(url, 'first-redirect')
+            self.redirect(redirect_url)
             return
 
+        if self.wx_login(code):
+            self.redirect('index.html')
+            logger.debug('登录成功，有效时间 ' + str(expires))
+        else:
+            self.redirect('error.html')
+            logger.debug('登录失败')
+
+    def wx_login(self, code):
+	
         '''是否每次都要获取用户信息'''
         ret = wx_oauth.GetUserInfo(code)
         if (ret['state'] != 0):
             self.write(str(ret))
-	    return
+	    return False
 
    	userInfo = json.loads(ret['userinfo'])
 	tokenInfo = json.loads(ret['token_data'])
         userId = daos.userDao.QueryWeChat(userInfo['openid'])
         if not userId:
+            parentUserId = self.get_argument('userid', default=None)
+            logger.debug('new user login, super user id %s' % parentUserId)
             # 没有用户绑定, 生成绑定用户, 此时应该把头像存到本地服务器, 目前先不做，暂时用微信的，如果失效再更新吧
-            userId = userDao.GenerateUserByWeChat(userInfo, tokenInfo)
+            userId = daos.userDao.GenerateUserByWeChat(userInfo, tokenInfo, parentId=parentUserId)
+        else:
+            '''更新用户信息 .....'''
+            logger.debug('update wechat info to user. %s' % str(userInfo))
 
-        self.set_secure_cookie(self.secure_username, userId, expires_days=None, expires=7200)
-        self.render('main.html', user=userInfo['nickname'])
-
-    def post(self):
-        code = self.get_argument('code', default='0')
-        self.write('post welcome .... ')
-        # -----------------------------------
-        # if success.
-        self.set_secure_cookie(secure_cookie_name, expires_days=None, expires=7200)
-        # else render 'denglu shibai'
+        expires = int(time.time()) + self.expiresTime
+        self.set_secure_cookie(self.secure_username, userId, expires_days=None, expires=expires)
+        #self.set_secure_cookie(self.secure_username, userId)
+        return True
 
 class LogoutHandler(base.BaseHandler):
     def get(self):
